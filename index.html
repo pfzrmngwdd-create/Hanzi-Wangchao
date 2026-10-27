@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>汉字王朝 (Hànzì Wángcháo) – เกมคำศัพท์ HSK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@500;700;900&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#b3201a; --red-d:#7d1210; --verm:#d62d20; --gold:#e8b94a; --gold-d:#a67c00;
+  --cream:#fbf1d9; --cream-d:#efdcae; --ink:#1c1410; --green:#2f8f4e; --bad:#c0302a;
+  --hz:"Noto Serif SC","Songti SC","STSong","SimSun","Source Han Serif SC",serif;
+  --th:"Sarabun","Noto Sans Thai","Leelawadee UI","Tahoma",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:var(--th);color:var(--ink);line-height:1.5;
+  background-color:#5c0d0b;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='48'%3E%3Cg fill='none' stroke='%23e8b94a' stroke-opacity='.16' stroke-width='2'%3E%3Cpath d='M8 36a10 10 0 0 1 20 0a10 10 0 0 1 20 0a10 10 0 0 1 20 0a10 10 0 0 1 20 0'/%3E%3Cpath d='M0 24a8 8 0 0 1 16 0a8 8 0 0 1 16 0a8 8 0 0 1 16 0a8 8 0 0 1 16 0a8 8 0 0 1 16 0a8 8 0 0 1 16 0'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 0%,#a8231b 0%,#6a0f0c 55%,#3d0806 100%);
+  background-attachment:fixed;
+}
+button{font-family:inherit;cursor:pointer}
+.hz{font-family:var(--hz);font-weight:900}
+.wrap{max-width:980px;margin:0 auto;padding:16px 14px 48px}
+.screen{display:none}.screen.active{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* top bar */
+.topbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:6px}
+.icon-btn{background:rgba(0,0,0,.35);color:var(--gold);border:1.5px solid var(--gold);border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px}
+.icon-btn:hover{background:rgba(0,0,0,.55)}
+
+/* hero */
+.hero{position:relative;text-align:center;color:var(--cream);padding:18px 10px 0;overflow:hidden;border-radius:22px;
+  background:linear-gradient(180deg,#f3c76a 0%,#f0975a 38%,#b3201a 100%);
+  border:3px solid var(--gold);box-shadow:0 10px 30px rgba(0,0,0,.45), inset 0 0 0 4px rgba(122,18,16,.55)}
+.hero .sun{position:absolute;top:16px;left:50%;width:150px;height:150px;margin-left:-75px;border-radius:50%;background:radial-gradient(circle,#fff3c4 0%,#ffd76a 60%,rgba(255,215,106,0) 72%)}
+.hero h1{position:relative;margin:6px 0 0;font-family:"Ma Shan Zheng",var(--hz);font-weight:400;font-size:clamp(54px,12vw,104px);line-height:1.05;color:#fff3c4;
+  text-shadow:0 3px 0 var(--red-d),0 6px 0 rgba(0,0,0,.25),0 0 24px rgba(255,214,100,.7)}
+.hero .py{position:relative;font-weight:700;letter-spacing:.14em;font-size:clamp(15px,3vw,22px);color:#fff;text-shadow:0 2px 0 var(--red-d)}
+.hero .tag{position:relative;display:inline-block;margin:10px 0 4px;padding:6px 18px;border-radius:999px;background:var(--red-d);border:2px solid var(--gold);color:var(--gold);font-weight:700;font-size:clamp(15px,2.8vw,20px)}
+.hero .scene{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:2px;margin-top:6px}
+.hero .scene svg{display:block}
+.palace{width:min(420px,56%);height:auto}
+.char{width:min(120px,22%);height:auto;animation:bob 2.6s ease-in-out infinite}
+.char.r{animation-delay:-1.3s}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.dragon{position:absolute;top:70px;left:-10px;width:58%;opacity:.95;animation:drift 9s ease-in-out infinite alternate;pointer-events:none}
+.dragon.right{left:auto;right:-14px;transform:scaleX(-1);top:110px;width:40%;animation-direction:alternate-reverse}
+@keyframes drift{to{transform:translateX(18px)}}
+.dragon.right{animation-name:drift2}@keyframes drift2{from{transform:scaleX(-1) translateX(0)}to{transform:scaleX(-1) translateX(18px)}}
+.lantern{position:absolute;top:-6px;width:46px;height:96px;transform-origin:50% 0;animation:swing 3.2s ease-in-out infinite;z-index:2}
+.lantern.l1{left:5%}.lantern.l2{right:5%;animation-delay:-1.6s}
+.lantern::before{content:"";position:absolute;left:50%;top:0;width:2px;height:22px;background:var(--gold-d)}
+.lantern i{position:absolute;left:0;right:0;top:20px;height:52px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ff6b4a,#c81e14 70%);border:2px solid var(--gold);box-shadow:0 0 22px rgba(255,120,60,.8)}
+.lantern::after{content:"";position:absolute;left:50%;top:72px;width:3px;height:22px;margin-left:-1.5px;background:var(--gold);box-shadow:-6px 4px 0 var(--gold),6px 4px 0 var(--gold)}
+@keyframes swing{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+
+/* panels */
+.panel{background:var(--cream);border:3px solid var(--gold);border-radius:18px;padding:16px 18px;margin-top:16px;box-shadow:0 6px 18px rgba(0,0,0,.35), inset 0 0 0 3px rgba(179,32,26,.18)}
+.panel h2{margin:0 0 8px;font-size:20px;color:var(--red-d);display:flex;align-items:center;gap:8px}
+.panel h2::before{content:"";width:10px;height:22px;background:var(--verm);border-radius:2px}
+.story{font-size:17px}
+.welcome{margin-top:8px;padding:8px 12px;background:#fff7e1;border-left:5px solid var(--verm);border-radius:6px;font-weight:600}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab,.chip{border:2px solid var(--red);background:#fff;color:var(--red-d);padding:8px 16px;border-radius:999px;font-weight:700;font-size:16px}
+.tab.on,.chip.on{background:var(--red);color:var(--cream);box-shadow:0 3px 0 var(--red-d)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hint{font-size:14px;color:#6b4a2a;margin:8px 0 0}
+.teams{display:none;margin-top:10px}.teams.on{display:block}
+.team-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:10px}
+.team-inputs input{width:100%;padding:9px 12px;font:inherit;font-weight:600;border:2px solid var(--gold-d);border-radius:10px;background:#fff}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:14px}
+.stage{position:relative;background:linear-gradient(180deg,#fff7e1,#f3dfae);border:3px solid var(--gold-d);border-radius:16px;padding:14px;text-align:center;overflow:hidden}
+.stage .num{position:absolute;top:-4px;left:-4px;background:var(--red);color:var(--gold);border:3px solid var(--gold);border-radius:0 0 16px 0;padding:2px 14px 4px;font-weight:900}
+.stage h3{margin:14px 0 2px;font-size:22px;color:var(--red-d)}
+.stage .zh{font-family:var(--hz);font-weight:900;font-size:28px;color:var(--red)}
+.stage p{margin:4px 0 8px;font-size:15px}
+.stage .best{font-size:14px;color:#6b4a2a;margin-bottom:10px}
+.badge{display:inline-block;background:var(--ink);color:var(--gold);border-radius:6px;padding:1px 8px;font-size:13px;font-weight:700}
+.btn{border:3px solid var(--gold);background:linear-gradient(180deg,var(--verm),var(--red-d));color:#fff3c4;font-weight:800;font-size:18px;border-radius:14px;padding:10px 22px;box-shadow:0 4px 0 #4a0907;transition:transform .08s}
+.btn:hover{filter:brightness(1.1)}.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #4a0907}
+.btn.ghost{background:#fff;color:var(--red-d);border-color:var(--red);box-shadow:0 4px 0 #c9a77a}
+.btn.small{font-size:15px;padding:6px 14px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,.tab:focus-visible,.chip:focus-visible{outline:4px solid #2c6bd6;outline-offset:2px}
+
+/* seals */
+.seals{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.seal-cell{text-align:center}
+.seal{width:74px;height:74px;margin:0 auto;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--hz);font-weight:900;font-size:30px;border:3px solid rgba(0,0,0,.4);transform:rotate(-4deg);position:relative;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.seal::after{content:"";position:absolute;inset:4px;border:2px dashed rgba(0,0,0,.35);border-radius:8px}
+.seal.bronze{background:linear-gradient(135deg,#e6a46a,#9a5a26);color:#4a2308}
+.seal.silver{background:linear-gradient(135deg,#f4f6f8,#9aa3ad);color:#2f3740}
+.seal.gold{background:linear-gradient(135deg,#ffe58a,#c8921a);color:#5b3b00}
+.seal.jade{background:linear-gradient(135deg,#9be3c0,#1f8a63);color:#08382a}
+.seal.locked{filter:grayscale(1) brightness(.75);opacity:.45}
+.seal-cell small{display:block;font-size:13px;margin-top:4px}
+.rankline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.rankname{background:var(--red);color:var(--gold);padding:4px 16px;border-radius:999px;font-weight:800;font-size:18px;border:2px solid var(--gold)}
+
+/* play */
+.hud{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;color:var(--cream)}
+.hud .pill{background:rgba(0,0,0,.4);border:2px solid var(--gold);border-radius:999px;padding:4px 14px;font-weight:700}
+.hearts{font-size:24px;letter-spacing:2px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.4))}
+.hearts .lost{filter:grayscale(1);opacity:.35}
+.hearts .lose-anim{animation:shake .4s}
+.score-wrap{position:relative}
+.scorepop{position:absolute;right:6px;top:-6px;color:#ffe58a;font-weight:900;font-size:22px;opacity:0;pointer-events:none}
+.scorepop.go{animation:pop .9s ease-out}
+@keyframes pop{0%{opacity:0;transform:translateY(8px) scale(.6)}25%{opacity:1;transform:translateY(-8px) scale(1.2)}100%{opacity:0;transform:translateY(-34px)}}
+.progress{height:16px;margin:10px 0;background:rgba(0,0,0,.45);border:2px solid var(--gold);border-radius:999px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--verm),var(--gold));transition:width .4s}
+.board{display:none;gap:8px;flex-wrap:wrap;margin:6px 0}.board.on{display:flex}
+.team-chip{flex:1;min-width:120px;background:rgba(0,0,0,.4);border:2px solid #8a6a2a;color:var(--cream);border-radius:12px;padding:6px 10px;text-align:center;font-weight:700}
+.team-chip.turn{border-color:var(--gold);background:var(--red);box-shadow:0 0 14px rgba(255,214,100,.7);transform:scale(1.03)}
+.team-chip b{display:block;font-size:20px;color:var(--gold)}
+.qcard{position:relative;background:var(--cream);border:3px solid var(--gold);border-radius:20px;padding:16px;margin-top:8px;box-shadow:0 8px 22px rgba(0,0,0,.4), inset 0 0 0 4px rgba(179,32,26,.2)}
+.qhead{display:flex;gap:12px;align-items:center}
+.qhead .char{width:72px;flex:none;animation:none}
+.bubble{flex:1;background:#fff;border:2px solid var(--gold-d);border-radius:14px;padding:8px 12px;font-weight:700;color:var(--red-d);position:relative}
+.bubble::before{content:"";position:absolute;left:-9px;top:50%;margin-top:-8px;border:8px solid transparent;border-right-color:var(--gold-d);border-left:0}
+.prompt{text-align:center;margin:8px 0 10px;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.prompt .big{font-family:var(--hz);font-weight:900;font-size:clamp(72px,17vw,132px);line-height:1.1;color:var(--ink)}
+.prompt .big.pin{font-family:var(--th);font-weight:800;font-size:clamp(46px,11vw,84px);color:var(--red-d);letter-spacing:.02em}
+.prompt .big.long{font-size:clamp(56px,13vw,100px)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{position:relative;min-height:74px;border:3px solid var(--gold-d);background:#fff;border-radius:16px;padding:10px 10px 10px 44px;font-size:clamp(22px,5vw,32px);font-weight:700;color:var(--ink);text-align:center;box-shadow:0 4px 0 #c9a77a;transition:transform .08s,background .15s}
+.opt.hzopt{font-family:var(--hz);font-weight:900;font-size:clamp(32px,7vw,50px)}
+.opt .k{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:var(--red);color:var(--gold);font-family:var(--th);font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.opt:hover:not(:disabled){background:#fff0c9;transform:translateY(-2px)}
+.opt:disabled{cursor:default}
+.opt.right{background:#d6f3dd;border-color:var(--green);animation:glow .6s}
+.opt.wrong{background:#ffd9d6;border-color:var(--bad);animation:shake .4s}
+.opt.dim{opacity:.55}
+@keyframes glow{50%{box-shadow:0 0 22px 6px rgba(47,143,78,.7)}}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.feedback{display:none;margin-top:14px;border-radius:14px;padding:12px 14px;border:3px solid;animation:fade .3s}
+.feedback.on{display:block}
+.feedback.good{background:#e4f7e8;border-color:var(--green)}
+.feedback.bad{background:#ffe6e3;border-color:var(--bad)}
+.feedback .msg{font-weight:800;font-size:20px;margin-bottom:4px}
+.feedback .ans{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+.feedback .ans .hz{font-size:38px}
+.feedback .ans .p{font-weight:800;font-size:22px;color:var(--red-d)}
+.feedback .ans .t{font-size:19px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;align-items:center}
+.speak{background:#fff;border:2px solid var(--gold-d);border-radius:999px;padding:5px 14px;font-weight:700;color:var(--red-d)}
+.speak:hover{background:#fff0c9}
+.quit{margin-top:14px;text-align:center}
+
+/* summary */
+.sum{text-align:center;position:relative;overflow:hidden}
+.sum .title{font-family:var(--hz);font-weight:900;font-size:clamp(30px,7vw,48px);color:var(--red);margin:0}
+.sum .emp{width:110px;margin:0 auto;display:block}
+.bigscore{font-size:clamp(54px,14vw,96px);font-weight:900;color:var(--red-d);line-height:1}
+.bigscore small{font-size:.35em;color:#6b4a2a}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.stat{background:#fff;border:2px solid var(--gold-d);border-radius:12px;padding:8px}
+.stat b{display:block;font-size:26px;color:var(--red-d)}
+.rankbox{margin:10px auto;display:inline-block;background:linear-gradient(180deg,var(--verm),var(--red-d));color:#fff3c4;border:3px solid var(--gold);border-radius:16px;padding:8px 26px;font-size:clamp(20px,5vw,30px);font-weight:900;box-shadow:0 0 18px rgba(232,185,74,.7)}
+.rankbox.up{animation:glow2 1.2s ease-in-out 3}
+@keyframes glow2{50%{box-shadow:0 0 40px 12px rgba(255,220,110,.95);transform:scale(1.06)}}
+.review{text-align:left;margin-top:12px}
+.review table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+.review th,.review td{padding:8px 10px;border-bottom:1px solid #e3cf9c;text-align:left}
+.review th{background:var(--red);color:var(--gold)}
+.review td.hz{font-size:30px}
+.rank-table{width:100%;max-width:520px;margin:10px auto;border-collapse:collapse;background:#fff}
+.rank-table td,.rank-table th{padding:8px 12px;border-bottom:1px solid #e3cf9c}
+.rank-table th{background:var(--red);color:var(--gold)}
+.coin{position:fixed;top:-30px;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3a8,#d49a15);border:2px solid #a67c00;z-index:50;pointer-events:none;animation:fall linear forwards}
+.coin.red{background:radial-gradient(circle at 35% 35%,#ff9a8a,#c81e14);border-color:#7d1210}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:var(--ink);color:var(--gold);padding:10px 18px;border-radius:12px;border:2px solid var(--gold);font-weight:700;opacity:0;transition:.3s;z-index:60;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.foot{text-align:center;color:#e9c98a;font-size:13px;margin-top:20px}
+@media (max-width:520px){
+  .opts{gap:8px}.opt{padding-left:38px}
+  .qhead .char{width:56px}
+  .dragon{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ HOME ============ -->
+<section id="home" class="screen active">
+  <div class="topbar">
+    <button class="icon-btn" id="muteBtn" aria-pressed="false">🔊 เสียง: เปิด</button>
+  </div>
+
+  <div class="hero">
+    <div class="sun"></div>
+    <div class="lantern l1"><i></i></div>
+    <div class="lantern l2"><i></i></div>
+    <div class="dragon" id="dragonL"></div>
+    <div class="dragon right" id="dragonR"></div>
+    <h1 lang="zh-Hans">汉字王朝</h1>
+    <div class="py">HÀNZÌ WÁNGCHÁO</div>
+    <div class="tag">ผ่านด่านอักษรจีน พิชิตตำแหน่งขุนนาง</div>
+    <div class="scene">
+      <div class="char" id="heroScholar"></div>
+      <div class="palace" id="palaceSvg"></div>
+      <div class="char r" id="heroEmperor"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>เรื่องราวแห่งราชสำนัก</h2>
+    <div class="story">
+      เมื่อครั้งราชวงศ์โบราณ ฮ่องเต้ทรงเปิดสอบคัดเลือกขุนนางทั่วแผ่นดิน
+      เจ้าคือบัณฑิตหนุ่มที่ฝันจะได้เข้าเฝ้าบนท้องพระโรง ต้องผ่านด่านทดสอบอักษรจีนทีละด่าน
+      สะสมตราประทับ และไต่เต้าจาก <b>ผู้เข้าสอบ</b> สู่ <b>บัณฑิตหลวง</b> <b>ขุนนาง</b>
+      จนถึงตำแหน่งสูงสุด <b>ราชบัณฑิตแห่งราชสำนัก</b>
+    </div>
+    <div class="welcome" id="welcomeMsg"></div>
+  </div>
+
+  <div class="panel">
+    <h2>เลือกโหมดการเล่น</h2>
+    <div class="tabs" role="tablist">
+      <button class="tab on" id="tabSolo" role="tab">🧑‍🎓 เล่นคนเดียว</button>
+      <button class="tab" id="tabTeam" role="tab">🏮 แข่งขันเป็นทีม (ในห้องเรียน)</button>
+    </div>
+    <div class="teams" id="teamPanel">
+      <div class="row" style="margin-top:10px"><b>จำนวนทีม:</b>
+        <button class="chip" data-teams="2">2</button>
+        <button class="chip on" data-teams="3">3</button>
+        <button class="chip" data-teams="4">4</button>
+      </div>
+      <div class="team-inputs" id="teamInputs"></div>
+      <p class="hint">แต่ละทีมผลัดกันตอบทีละข้อ ทีมละ 5 ข้อ ไม่มีระบบชีวิตในโหมดนี้ และมีกระดานคะแนนแสดงตลอดเกม</p>
+    </div>
+
+    <h2 style="margin-top:16px">ระดับคำศัพท์ HSK</h2>
+    <div class="row" id="levelRow">
+      <button class="chip on" data-level="auto">ตามด่าน (HSK 1 → 2 → 3)</button>
+      <button class="chip" data-level="1">HSK 1</button>
+      <button class="chip" data-level="2">HSK 2</button>
+      <button class="chip" data-level="3">HSK 3</button>
+    </div>
+    <p class="hint" id="levelHint">ใช้ระดับเริ่มต้นของแต่ละด่าน และบันทึกตราประทับกับตำแหน่งให้</p>
+
+    <div class="stages" id="stages"></div>
+  </div>
+
+  <div class="panel">
+    <h2>ตำแหน่งและตราประทับของข้า</h2>
+    <div class="rankline"><span>ตำแหน่งปัจจุบัน:</span><span class="rankname" id="homeRank"></span></div>
+    <div class="seals" id="sealRow"></div>
+    <p class="hint">ตราประทับและตำแหน่งบันทึกในเบราว์เซอร์เครื่องนี้ (ใช้คะแนนจริงจากโหมดเล่นคนเดียวแบบ “ตามด่าน” เท่านั้น)
+      <button class="btn ghost small" id="resetBtn" style="margin-left:8px">ล้างความคืบหน้า</button></p>
+  </div>
+  <div class="foot">汉字王朝 · เกมทบทวนคำศัพท์ HSK 1–3 สำหรับนักเรียนมัธยม</div>
+</section>
+
+<!-- ============ PLAY ============ -->
+<section id="play" class="screen">
+  <div class="hud">
+    <span class="pill" id="stageName"></span>
+    <span class="pill hearts" id="hearts" aria-label="พลังชีวิต"></span>
+    <span class="pill score-wrap">คะแนน <b id="scoreNow">0</b><span class="scorepop" id="scorePop">+10</span></span>
+  </div>
+  <div class="progress" aria-label="ความคืบหน้า"><i id="progBar"></i></div>
+  <div class="hud"><span class="pill" id="progText">ข้อ 1/10</span><span class="pill" id="levelTag"></span></div>
+  <div class="board" id="board"></div>
+
+  <div class="qcard">
+    <div class="qhead">
+      <div class="char" id="playScholar"></div>
+      <div class="bubble" id="bubble">…</div>
+    </div>
+    <div class="prompt" id="prompt"></div>
+    <div class="opts" id="opts"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>
+  <div class="quit"><button class="btn ghost small" id="quitBtn">← กลับสู่หน้าหลัก</button></div>
+</section>
+
+<!-- ============ SUMMARY ============ -->
+<section id="summary" class="screen">
+  <div class="panel sum" id="sumBox"></div>
+</section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   คลังคำศัพท์ [ตัวอักษร, พินอิน, ความหมายไทย]
+   เลือกเฉพาะคำที่อ่านออกเสียงได้แน่นอนเพียงแบบเดียวในรูปคำนั้น ๆ
+   ============================================================ */
+const VOCAB = {
+ 1:[
+  ["你好","nǐ hǎo","สวัสดี"],["谢谢","xièxie","ขอบคุณ"],["再见","zàijiàn","ลาก่อน"],
+  ["学生","xuésheng","นักเรียน"],["老师","lǎoshī","ครู อาจารย์"],["朋友","péngyou","เพื่อน"],
+  ["爸爸","bàba","พ่อ"],["妈妈","māma","แม่"],["水","shuǐ","น้ำ"],["茶","chá","ชา"],
+  ["米饭","mǐfàn","ข้าวสวย"],["苹果","píngguǒ","แอปเปิล"],["猫","māo","แมว"],["狗","gǒu","สุนัข"],
+  ["书","shū","หนังสือ"],["学校","xuéxiào","โรงเรียน"],["医院","yīyuàn","โรงพยาบาล"],
+  ["商店","shāngdiàn","ร้านค้า"],["火车","huǒchē","รถไฟ"],["飞机","fēijī","เครื่องบิน"],
+  ["天气","tiānqì","อากาศ"],["今天","jīntiān","วันนี้"],["明天","míngtiān","พรุ่งนี้"],
+  ["昨天","zuótiān","เมื่อวานนี้"],["喜欢","xǐhuan","ชอบ"],["喝","hē","ดื่ม"],["吃","chī","กิน"],
+  ["爱","ài","รัก"],["儿子","érzi","ลูกชาย"],["电脑","diànnǎo","คอมพิวเตอร์"],
+  ["电话","diànhuà","โทรศัพท์"],["衣服","yīfu","เสื้อผ้า"],["椅子","yǐzi","เก้าอี้"],
+  ["桌子","zhuōzi","โต๊ะ"],["杯子","bēizi","แก้ว"],["名字","míngzi","ชื่อ"]
+ ],
+ 2:[
+  ["但是","dànshì","แต่ว่า"],["已经","yǐjīng","แล้ว (เรียบร้อยแล้ว)"],["非常","fēicháng","มาก ๆ อย่างยิ่ง"],
+  ["告诉","gàosu","บอก"],["旅游","lǚyóu","ท่องเที่ยว"],["运动","yùndòng","ออกกำลังกาย กีฬา"],
+  ["游泳","yóuyǒng","ว่ายน้ำ"],["跑步","pǎobù","วิ่ง"],["唱歌","chànggē","ร้องเพลง"],
+  ["跳舞","tiàowǔ","เต้นรำ"],["手机","shǒujī","โทรศัพท์มือถือ"],["手表","shǒubiǎo","นาฬิกาข้อมือ"],
+  ["眼睛","yǎnjing","ดวงตา"],["身体","shēntǐ","ร่างกาย"],["鸡蛋","jīdàn","ไข่ไก่"],
+  ["牛奶","niúnǎi","นมวัว"],["面条","miàntiáo","บะหมี่ เส้นก๋วยเตี๋ยว"],["西瓜","xīguā","แตงโม"],
+  ["咖啡","kāfēi","กาแฟ"],["公司","gōngsī","บริษัท"],["机场","jīchǎng","สนามบิน"],
+  ["出租车","chūzūchē","แท็กซี่"],["教室","jiàoshì","ห้องเรียน"],["问题","wèntí","ปัญหา คำถาม"],
+  ["帮助","bāngzhù","ช่วยเหลือ"],["报纸","bàozhǐ","หนังสือพิมพ์"],["比赛","bǐsài","การแข่งขัน"],
+  ["宾馆","bīnguǎn","โรงแรม"],["穿","chuān","สวมใส่"],["船","chuán","เรือ"],["药","yào","ยา"],
+  ["起床","qǐchuáng","ลุกจากเตียง ตื่นนอน"],["生病","shēngbìng","ป่วย"],["休息","xiūxi","พักผ่อน"],
+  ["足球","zúqiú","ฟุตบอล"],["所以","suǒyǐ","ดังนั้น"],["姐姐","jiějie","พี่สาว"],
+  ["哥哥","gēge","พี่ชาย"],["弟弟","dìdi","น้องชาย"],["妹妹","mèimei","น้องสาว"],
+  ["右边","yòubian","ด้านขวา"],["左边","zuǒbian","ด้านซ้าย"],["旁边","pángbiān","ข้าง ๆ"]
+ ],
+ 3:[
+  ["阿姨","āyí","คุณน้า คุณป้า"],["矮","ǎi","เตี้ย"],["安静","ānjìng","เงียบสงบ"],
+  ["搬","bān","ย้าย ขนย้าย"],["饱","bǎo","อิ่ม"],["北方","běifāng","ทิศเหนือ ภาคเหนือ"],
+  ["鼻子","bízi","จมูก"],["必须","bìxū","ต้อง จำเป็นต้อง"],["变化","biànhuà","เปลี่ยนแปลง"],
+  ["聪明","cōngmíng","ฉลาด"],["蛋糕","dàngāo","เค้ก"],["地铁","dìtiě","รถไฟใต้ดิน"],
+  ["动物","dòngwù","สัตว์"],["附近","fùjìn","บริเวณใกล้เคียง"],["复习","fùxí","ทบทวน"],
+  ["国家","guójiā","ประเทศ"],["害怕","hàipà","กลัว"],["季节","jìjié","ฤดูกาล"],
+  ["健康","jiànkāng","สุขภาพดี"],["邻居","línjū","เพื่อนบ้าน"],["努力","nǔlì","พยายาม ตั้งใจ"],
+  ["世界","shìjiè","โลก"],["网站","wǎngzhàn","เว็บไซต์"],["作业","zuòyè","การบ้าน"],
+  ["小心","xiǎoxīn","ระวัง"],["新鲜","xīnxiān","สดใหม่"],["洗澡","xǐzǎo","อาบน้ำ"],
+  ["熊猫","xióngmāo","แพนด้า"],["办公室","bàngōngshì","ห้องทำงาน"],["帮忙","bāngmáng","ช่วยเหลือ"],
+  ["笔记本","bǐjìběn","สมุดบันทึก"],["办法","bànfǎ","วิธีการ"],["担心","dānxīn","กังวล"],
+  ["春天","chūntiān","ฤดูใบไม้ผลิ"],["厨房","chúfáng","ห้องครัว"],["箱子","xiāngzi","หีบ กล่อง"]
+ ]
+};
+
+const STAGES = {
+ 1:{name:"พินอินเข้าวัง",zh:"入宫",level:1,type:"h2p",desc:"ดูตัวอักษรจีน แล้วเลือกพินอินที่ถูกต้อง",seal:0},
+ 2:{name:"ตามหาอักษร",zh:"寻字",level:2,type:"p2h",desc:"ดูพินอิน แล้วเลือกตัวอักษรจีนที่ถูกต้อง",seal:1},
+ 3:{name:"สอบหน้าพระที่นั่ง",zh:"殿试",level:3,type:"mix",desc:"คำถามสลับทั้งสองแบบ ด่านสุดท้ายของราชสำนัก",seal:2}
+};
+const SEALS = [
+ {zh:"铜印",th:"ตราทองแดง",cls:"bronze"},
+ {zh:"银印",th:"ตราประทับเงิน",cls:"silver"},
+ {zh:"金印",th:"ตราประทับทอง",cls:"gold"},
+ {zh:"玉玺",th:"ตราหยกของจักรพรรดิ",cls:"jade"}
+];
+const RANKS = [
+ {name:"ผู้เข้าสอบ",msg:"ขอต้อนรับผู้เข้าสอบสู่ราชสำนัก จงเลือกด่านแล้วแสดงความสามารถให้ฮ่องเต้ทอดพระเนตร!"},
+ {name:"บัณฑิตหลวง",msg:"ฮ่องเต้ทรงพอพระทัย! เจ้าได้เป็นบัณฑิตหลวงแล้ว จงมุ่งสู่ตำแหน่งที่สูงกว่า"},
+ {name:"ขุนนาง",msg:"ความรู้อันเฉียบคมของท่านขุนนางเลื่องลือไปทั่วราชสำนัก!"},
+ {name:"ราชบัณฑิตแห่งราชสำนัก",msg:"ขอถวายพระพร! ท่านคือราชบัณฑิตแห่งราชสำนัก ผู้เปี่ยมปัญญาสูงสุดในแผ่นดิน"}
+];
+const QUESTIONS_SOLO = 10, QUESTIONS_PER_TEAM = 5, PASS_SCORE = 80;
+
+/* ---------- ตัวช่วย ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const word = a => ({hz:a[0],py:a[1],th:a[2]});
+
+/* ---------- บันทึกความคืบหน้า ---------- */
+const KEY = "hanzi-wangchao-v1";
+let mem = {best:{1:0,2:0,3:0}};
+(function load(){try{const o=JSON.parse(localStorage.getItem(KEY)||"null");if(o&&o.best){mem={best:{1:+o.best[1]||0,2:+o.best[2]||0,3:+o.best[3]||0}};}}catch(e){}})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(mem));}catch(e){}}
+function hasSeal(i){ if(i<3) return mem.best[i+1]>=PASS_SCORE; return mem.best[1]===100&&mem.best[2]===100&&mem.best[3]===100; }
+function overallRank(){
+  if(hasSeal(3)) return 3;
+  const m=Math.max(mem.best[1],mem.best[2],mem.best[3]);
+  if(m>=90) return 2; if(m>=PASS_SCORE) return 1; return 0;
+}
+
+/* ---------- เสียง ---------- */
+let muted=false, actx=null;
+try{muted=localStorage.getItem("hw-mute")==="1";}catch(e){}
+function ctx(){ if(!actx){ try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } if(actx&&actx.state==="suspended")actx.resume(); return actx; }
+function tone(f,t,d,type,v){ const c=ctx(); if(!c||muted)return; const o=c.createOscillator(),g=c.createGain(); o.type=type||"sine"; o.frequency.value=f;
+  const s=c.currentTime+t; g.gain.setValueAtTime(0,s); g.gain.linearRampToValueAtTime(v||.15,s+.02); g.gain.exponentialRampToValueAtTime(.0001,s+d); o.connect(g);g.connect(c.destination); o.start(s); o.stop(s+d+.05); }
+const sfx = {
+  good(){tone(660,0,.14,"triangle");tone(880,.12,.22,"triangle");},
+  bad(){tone(220,0,.22,"sawtooth",.1);tone(165,.16,.3,"sawtooth",.1);},
+  win(){[523,659,784,1047].forEach((f,i)=>tone(f,i*.13,.3,"triangle",.16));},
+  lose(){[330,262,196].forEach((f,i)=>tone(f,i*.18,.34,"sawtooth",.09));},
+  click(){tone(500,0,.06,"square",.05);}
+};
+function refreshMute(){ const b=$("#muteBtn"); b.textContent=muted?"🔇 เสียง: ปิด":"🔊 เสียง: เปิด"; b.setAttribute("aria-pressed",muted); }
+$("#muteBtn").onclick=()=>{ muted=!muted; try{localStorage.setItem("hw-mute",muted?"1":"0");}catch(e){} refreshMute(); if(!muted)sfx.click(); };
+refreshMute();
+
+/* ---------- เสียงอ่านภาษาจีน (Web Speech API) ---------- */
+const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+function speak(text){
+  if(!canSpeak){toast("เบราว์เซอร์นี้ไม่รองรับเสียงอ่าน");return;}
+  const voices=speechSynthesis.getVoices();
+  if(voices.length && !voices.some(v=>/^zh/i.test(v.lang))) toast("เครื่องนี้อาจไม่มีเสียงภาษาจีน ลองติดตั้งเสียงจีนในระบบ");
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); u.lang="zh-CN"; u.rate=.8;
+  const zh=voices.find(v=>/^zh[-_]CN/i.test(v.lang))||voices.find(v=>/^zh/i.test(v.lang)); if(zh)u.voice=zh;
+  speechSynthesis.speak(u);
+}
+let toastT; function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),2800);}
+
+/* ---------- ภาพประกอบ SVG ---------- */
+function scholarSVG(){return `<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+ <path d="M22 150 L30 98 Q60 86 90 98 L98 150Z" fill="#2c5aa0" stroke="#1c1410" stroke-width="3"/>
+ <path d="M52 94 L60 118 L68 94Z" fill="#fbf1d9" stroke="#1c1410" stroke-width="2"/>
+ <rect x="46" y="118" width="28" height="5" fill="#e8b94a" stroke="#1c1410" stroke-width="1.5"/>
+ <circle cx="60" cy="62" r="30" fill="#ffe2bd" stroke="#1c1410" stroke-width="3"/>
+ <rect x="32" y="22" width="56" height="22" rx="6" fill="#1c1410"/>
+ <rect x="8" y="30" width="30" height="7" rx="3.5" fill="#1c1410"/><rect x="82" y="30" width="30" height="7" rx="3.5" fill="#1c1410"/>
+ <rect x="52" y="26" width="16" height="8" rx="2" fill="#e8b94a"/>
+ <circle cx="49" cy="66" r="4.2" fill="#1c1410"/><circle cx="71" cy="66" r="4.2" fill="#1c1410"/>
+ <circle cx="50.5" cy="64.5" r="1.4" fill="#fff"/><circle cx="72.5" cy="64.5" r="1.4" fill="#fff"/>
+ <circle cx="42" cy="76" r="5" fill="#ff9d8a" opacity=".7"/><circle cx="78" cy="76" r="5" fill="#ff9d8a" opacity=".7"/>
+ <path d="M52 78 Q60 86 68 78" fill="none" stroke="#1c1410" stroke-width="3" stroke-linecap="round"/>
+ <rect x="84" y="108" width="30" height="14" rx="3" fill="#fbf1d9" stroke="#1c1410" stroke-width="2.5"/>
+ <rect x="82" y="105" width="5" height="20" rx="2" fill="#b3201a"/><rect x="111" y="105" width="5" height="20" rx="2" fill="#b3201a"/>
+</svg>`;}
+function emperorSVG(){return `<svg viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+ <path d="M16 150 L26 98 Q60 84 94 98 L104 150Z" fill="#f2b705" stroke="#1c1410" stroke-width="3"/>
+ <circle cx="60" cy="124" r="13" fill="none" stroke="#b3201a" stroke-width="4"/>
+ <path d="M54 124 q6 -12 12 0 q-6 8 -12 0z" fill="#b3201a"/>
+ <path d="M26 100 Q60 112 94 100" fill="none" stroke="#b3201a" stroke-width="5"/>
+ <circle cx="60" cy="64" r="29" fill="#ffe2bd" stroke="#1c1410" stroke-width="3"/>
+ <rect x="22" y="22" width="76" height="9" rx="2" fill="#1c1410" transform="rotate(-2 60 26)"/>
+ <rect x="38" y="28" width="44" height="14" fill="#1c1410"/>
+ <g stroke="#e8b94a" stroke-width="2.5"><line x1="26" y1="31" x2="26" y2="52"/><line x1="36" y1="31" x2="36" y2="48"/><line x1="84" y1="31" x2="84" y2="48"/><line x1="94" y1="31" x2="94" y2="52"/></g>
+ <g fill="#b3201a"><circle cx="26" cy="54" r="3.4"/><circle cx="36" cy="50" r="3.4"/><circle cx="84" cy="50" r="3.4"/><circle cx="94" cy="54" r="3.4"/></g>
+ <path d="M44 62 q5 -5 10 0 M66 62 q5 -5 10 0" fill="none" stroke="#1c1410" stroke-width="3" stroke-linecap="round"/>
+ <circle cx="42" cy="74" r="5" fill="#ff9d8a" opacity=".7"/><circle cx="78" cy="74" r="5" fill="#ff9d8a" opacity=".7"/>
+ <path d="M52 76 Q60 84 68 76" fill="none" stroke="#1c1410" stroke-width="3" stroke-linecap="round"/>
+ <path d="M50 70 q-12 4 -16 16 M70 70 q12 4 16 16" fill="none" stroke="#1c1410" stroke-width="2.5" stroke-linecap="round"/>
+</svg>`;}
+function palaceSVG(){return `<svg viewBox="0 0 420 190" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+ <rect x="0" y="168" width="420" height="22" fill="#6a0f0c"/>
+ <g fill="#8e1b14" stroke="#1c1410" stroke-width="2"><rect x="120" y="108" width="180" height="62"/><rect x="160" y="62" width="100" height="46"/></g>
+ <g fill="#e8b94a"><rect x="136" y="112" width="8" height="56"/><rect x="170" y="112" width="8" height="56"/><rect x="242" y="112" width="8" height="56"/><rect x="276" y="112" width="8" height="56"/></g>
+ <path d="M205 168 V138 a14 14 0 0 1 28 0 V168Z" fill="#3a0806" stroke="#e8b94a" stroke-width="3"/>
+ <path d="M92 110 Q122 110 130 96 L290 96 Q298 110 328 110 L310 120 L110 120Z" fill="#f2b705" stroke="#1c1410" stroke-width="2.5"/>
+ <path d="M140 66 Q166 66 172 52 L248 52 Q254 66 280 66 L266 74 L154 74Z" fill="#f2b705" stroke="#1c1410" stroke-width="2.5"/>
+ <path d="M178 40 Q192 38 196 26 L224 26 Q228 38 242 40 L234 46 L186 46Z" fill="#f2b705" stroke="#1c1410" stroke-width="2.5"/>
+ <circle cx="210" cy="20" r="6" fill="#d62d20" stroke="#1c1410" stroke-width="2"/>
+ <path d="M60 170 L120 170 L120 150 L90 150 Z M300 150 L330 150 L360 170 L300 170Z" fill="#a8231b" stroke="#1c1410" stroke-width="2"/>
+ <g fill="#fbf1d9" opacity=".95"><rect x="30" y="172" width="360" height="5"/><rect x="50" y="179" width="320" height="5"/></g>
+ <g fill="#d62d20" stroke="#e8b94a" stroke-width="2"><circle cx="150" cy="100" r="6"/><circle cx="270" cy="100" r="6"/></g>
+</svg>`;}
+function dragonSVG(){return `<svg viewBox="0 0 320 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+ <path d="M6 88 C46 16 92 118 140 56 S226 6 258 56" fill="none" stroke="#7d1210" stroke-width="20" stroke-linecap="round"/>
+ <path d="M6 88 C46 16 92 118 140 56 S226 6 258 56" fill="none" stroke="#e8b94a" stroke-width="14" stroke-linecap="round"/>
+ <path d="M6 88 C46 16 92 118 140 56 S226 6 258 56" fill="none" stroke="#b3201a" stroke-width="7" stroke-linecap="round" stroke-dasharray="3 11"/>
+ <g transform="translate(258 56)"><ellipse cx="14" cy="0" rx="24" ry="17" fill="#e8b94a" stroke="#7d1210" stroke-width="3"/>
+  <circle cx="20" cy="-5" r="4.5" fill="#1c1410"/><circle cx="21.5" cy="-6.5" r="1.4" fill="#fff"/>
+  <path d="M0 -14 Q-6 -34 -22 -36 M8 -15 Q8 -36 -2 -42" fill="none" stroke="#7d1210" stroke-width="4" stroke-linecap="round"/>
+  <path d="M34 4 q10 0 16 -6 M34 8 q12 4 20 0" fill="none" stroke="#7d1210" stroke-width="3" stroke-linecap="round"/></g>
+</svg>`;}
+function sealHTML(i,locked){const s=SEALS[i];return `<div class="seal-cell"><div class="seal ${s.cls} ${locked?"locked":""}" lang="zh-Hans">${s.zh}</div><small>${locked?"ยังไม่ได้รับ":esc(s.th)}</small></div>`;}
+
+$("#heroScholar").innerHTML=scholarSVG(); $("#heroEmperor").innerHTML=emperorSVG();
+$("#palaceSvg").innerHTML=palaceSVG(); $("#dragonL").innerHTML=dragonSVG(); $("#dragonR").innerHTML=dragonSVG();
+$("#playScholar").innerHTML=scholarSVG();
+
+/* ---------- สถานะเกม ---------- */
+const G = {mode:"solo", level:"auto", teamCount:3, teamNames:["ทีมมังกร","ทีมหงส์","ทีมเสือ","ทีมเต่า"], run:null};
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("active",s.id===id)); window.scrollTo({top:0});}
+
+/* ---------- หน้าหลัก ---------- */
+function renderHome(){
+  const r=overallRank();
+  $("#homeRank").textContent=RANKS[r].name;
+  $("#welcomeMsg").textContent=RANKS[r].msg;
+  $("#sealRow").innerHTML=SEALS.map((s,i)=>sealHTML(i,!hasSeal(i))).join("");
+  const levelTxt = G.level==="auto" ? null : "HSK "+G.level;
+  $("#stages").innerHTML=Object.keys(STAGES).map(k=>{
+    const s=STAGES[k], lv=levelTxt||("HSK "+s.level);
+    const b=mem.best[k];
+    return `<div class="stage"><div class="num">ด่าน ${k}</div>
+      <h3>${esc(s.name)}</h3><div class="zh" lang="zh-Hans">${s.zh}</div>
+      <p>${esc(s.desc)}</p>
+      <div class="best"><span class="badge">${lv}</span> คะแนนสูงสุด: <b>${b}</b>/100 ${hasSeal(s.seal)?"· "+SEALS[s.seal].zh:""}</div>
+      <button class="btn" data-stage="${k}">เข้าสอบด่านนี้</button></div>`;}).join("");
+  document.querySelectorAll("[data-stage]").forEach(b=>b.onclick=()=>{ctx();sfx.click();startGame(+b.dataset.stage);});
+  const hint = G.level==="auto" ? "ใช้ระดับเริ่มต้นของแต่ละด่าน และบันทึกตราประทับกับตำแหน่งให้" : "เลือกระดับเอง: ใช้ HSK "+G.level+" ทุกด่าน (ไม่บันทึกตราประทับและตำแหน่ง)";
+  $("#levelHint").textContent=G.mode==="team" ? hint.replace(" และบันทึกตราประทับกับตำแหน่งให้","").replace(" (ไม่บันทึกตราประทับและตำแหน่ง)","")+" (โหมดทีมไม่บันทึกตราประทับ)" : hint;
+}
+function renderTeamInputs(){
+  $("#teamInputs").innerHTML=Array.from({length:G.teamCount},(_,i)=>`<input type="text" maxlength="16" value="${esc(G.teamNames[i])}" data-ti="${i}" aria-label="ชื่อทีมที่ ${i+1}">`).join("");
+  document.querySelectorAll("[data-ti]").forEach(inp=>inp.oninput=()=>{G.teamNames[+inp.dataset.ti]=inp.value;});
+  document.querySelectorAll("[data-teams]").forEach(b=>b.classList.toggle("on",+b.dataset.teams===G.teamCount));
+}
+function setMode(m){G.mode=m;$("#tabSolo").classList.toggle("on",m==="solo");$("#tabTeam").classList.toggle("on",m==="team");$("#teamPanel").classList.toggle("on",m==="team");renderHome();}
+$("#tabSolo").onclick=()=>setMode("solo"); $("#tabTeam").onclick=()=>setMode("team");
+document.querySelectorAll("[data-teams]").forEach(b=>b.onclick=()=>{G.teamCount=+b.dataset.teams;renderTeamInputs();});
+document.querySelectorAll("#levelRow .chip").forEach(b=>b.onclick=()=>{G.level=b.dataset.level==="auto"?"auto":+b.dataset.level;
+  document.querySelectorAll("#levelRow .chip").forEach(x=>x.classList.toggle("on",x===b)); renderHome();});
+$("#resetBtn").onclick=()=>{ if(confirm("ล้างตราประทับและคะแนนสูงสุดทั้งหมดหรือไม่?")){mem={best:{1:0,2:0,3:0}};save();renderHome();toast("ล้างความคืบหน้าแล้ว");} };
+
+/* ---------- สร้างคำถาม ---------- */
+function buildQuestions(stage,n,level){
+  const pool=VOCAB[level].map(word);
+  const picks=shuffle(pool).slice(0,n);
+  const st=STAGES[stage]; let types;
+  if(st.type==="mix"){ types=shuffle(Array.from({length:n},(_,i)=>i%2?"h2p":"p2h")); }
+  else types=Array(n).fill(st.type);
+  return picks.map((w,i)=>{
+    const type=types[i];
+    const cands=shuffle(pool.filter(x=>x.hz!==w.hz && x.py!==w.py));
+    const same=cands.filter(x=>x.hz.length===w.hz.length), other=cands.filter(x=>x.hz.length!==w.hz.length);
+    const dis=same.concat(other).slice(0,3);
+    const val=x=>type==="h2p"?x.py:x.hz;
+    const opts=shuffle([{w,ok:true},...dis.map(d=>({w:d,ok:false}))]).map(o=>({text:val(o.w),ok:o.ok}));
+    return {type,word:w,opts};
+  });
+}
+
+/* ---------- เริ่มเกม ---------- */
+function startGame(stage){
+  const team=G.mode==="team";
+  const level=G.level==="auto"?STAGES[stage].level:G.level;
+  const teams=team?Array.from({length:G.teamCount},(_,i)=>({name:(G.teamNames[i]||"").trim()||("ทีม "+(i+1)),score:0,right:0})):null;
+  const n=team?G.teamCount*QUESTIONS_PER_TEAM:QUESTIONS_SOLO;
+  G.run={stage,level,team,teams,n,qs:buildQuestions(stage,n,level),idx:0,score:0,lives:3,right:0,answered:0,wrong:[],locked:true,over:false};
+  $("#stageName").textContent="ด่าน "+stage+" · "+STAGES[stage].name;
+  $("#levelTag").textContent="HSK "+level+(team?" · โหมดทีม":"");
+  $("#hearts").style.display=team?"none":"";
+  $("#board").classList.toggle("on",team);
+  $("#scoreNow").textContent="0";
+  show("play"); renderQuestion();
+}
+function renderHearts(lose){
+  $("#hearts").innerHTML=[0,1,2].map(i=>`<span class="${i>=G.run.lives?"lost":""} ${lose&&i===G.run.lives?"lose-anim":""}">❤️</span>`).join("");
+}
+function renderBoard(){
+  const r=G.run; if(!r.team)return; const cur=r.idx%r.teams.length;
+  $("#board").innerHTML=r.teams.map((t,i)=>`<div class="team-chip ${i===cur?"turn":""}">${esc(t.name)}<b>${t.score}</b></div>`).join("");
+}
+function renderQuestion(){
+  const r=G.run, q=r.qs[r.idx]; r.locked=false;
+  $("#progText").textContent=`ข้อ ${r.idx+1}/${r.n}`;
+  $("#progBar").style.width=(r.idx/r.n*100)+"%";
+  renderHearts(false); renderBoard();
+  $("#scoreNow").textContent=r.team?r.teams.reduce((a,t)=>a+t.score,0):r.score;
+  $("#bubble").textContent = r.team ? ("ถึงตา "+r.teams[r.idx%r.teams.length].name+" แล้ว!") : (q.type==="h2p"?"อักษรนี้อ่านว่าอย่างไร?":"พินอินนี้คืออักษรใด?");
+  const w=q.word, pr=$("#prompt");
+  if(q.type==="h2p"){
+    pr.innerHTML=`<div class="big ${w.hz.length>2?"long":""}" lang="zh-Hans">${w.hz}</div><div class="hint" style="margin:0">เลือกพินอินที่ถูกต้อง</div>`;
+  }else{
+    pr.innerHTML=`<div class="big pin">${esc(w.py)}</div><div class="hint" style="margin:0">เลือกตัวอักษรจีนที่ถูกต้อง</div><button class="speak" id="preSpeak" ${canSpeak?"":"hidden"}>🔊 ฟังเสียง</button>`;
+    const pb=$("#preSpeak"); if(pb)pb.onclick=()=>speak(w.hz);
+  }
+  $("#opts").innerHTML=q.opts.map((o,i)=>`<button class="opt ${q.type==="p2h"?"hzopt":""}" data-i="${i}" ${q.type==="p2h"?'lang="zh-Hans"':""}><span class="k">${i+1}</span>${esc(o.text)}</button>`).join("");
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+  const f=$("#feedback"); f.className="feedback"; f.innerHTML="";
+}
+function popScore(){const p=$("#scorePop");p.classList.remove("go");void p.offsetWidth;p.classList.add("go");}
+
+function answer(i){
+  const r=G.run; if(!r||r.locked||r.over)return; r.locked=true;
+  const q=r.qs[r.idx], pick=q.opts[i], ok=pick.ok, w=q.word;
+  r.answered++;
+  document.querySelectorAll(".opt").forEach((b,j)=>{
+    b.disabled=true;
+    if(q.opts[j].ok)b.classList.add("right"); else if(j===i)b.classList.add("wrong"); else b.classList.add("dim");
+  });
+  if(ok){
+    r.right++; sfx.good();
+    if(r.team){r.teams[r.idx%r.teams.length].score+=10;r.teams[r.idx%r.teams.length].right++;} else r.score+=10;
+    popScore();
+  }else{
+    sfx.bad(); r.wrong.push(w);
+    if(!r.team){r.lives--; renderHearts(true);}
+  }
+  $("#scoreNow").textContent=r.team?r.teams.reduce((a,t)=>a+t.score,0):r.score;
+  renderBoard();
+  const outOfLives=!r.team&&r.lives<=0, last=r.idx>=r.n-1;
+  const lastBtn=(outOfLives||last);
+  const msg = ok ? "ยอดเยี่ยม! บัณฑิตผ่านด่านแล้ว" : (outOfLives?"พลังชีวิตหมดแล้ว! เฉลยคือ":"เสียดายนัก! คำตอบที่ถูกต้องคือ");
+  const f=$("#feedback");
+  f.className="feedback on "+(ok?"good":"bad");
+  f.innerHTML=`<div class="msg">${ok?"✅ ":"❌ "}${msg}${ok&&!r.team?" (+10)":""}${ok&&r.team?" (+10 ให้ "+esc(r.teams[r.idx%r.teams.length].name)+")":""}</div>
+   <div class="ans"><span class="hz" lang="zh-Hans">${w.hz}</span><span class="p">${esc(w.py)}</span><span class="t">= ${esc(w.th)}</span></div>
+   <div class="actions">${canSpeak?'<button class="speak" id="fbSpeak">🔊 ฟังเสียง</button>':""}
+   <button class="btn" id="nextBtn">${lastBtn?"ดูผลสอบ ➜":"ข้อต่อไป ➜"}</button></div>`;
+  const sb=$("#fbSpeak"); if(sb)sb.onclick=()=>speak(w.hz);
+  const nb=$("#nextBtn"); nb.onclick=next; nb.focus({preventScroll:true});
+  nb.scrollIntoView({block:"nearest",behavior:"smooth"});
+  r.afterLast=lastBtn;
+}
+function next(){
+  const r=G.run; if(!r||!r.locked||r.over)return;
+  if(r.afterLast){finish();return;}
+  sfx.click(); r.idx++; renderQuestion();
+}
+
+/* ---------- สรุปผล ---------- */
+function coins(n,red){
+  for(let i=0;i<n;i++){const c=document.createElement("div");c.className="coin"+(i%3===0?" red":"");c.style.left=Math.random()*100+"vw";
+    c.style.animationDuration=(2.2+Math.random()*2)+"s";c.style.animationDelay=(Math.random()*.9)+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),5200);}
+}
+function finish(){
+  const r=G.run; r.over=true;
+  const total=r.n*10, wrongN=r.answered-r.right, pct=r.answered?Math.round(r.right/r.answered*100):0;
+  const box=$("#sumBox"); let html="";
+  const reviewHTML = r.wrong.length ? `<div class="review"><h2>คำศัพท์ที่ควรทบทวน</h2><table><thead><tr><th>อักษร</th><th>พินอิน</th><th>ความหมาย</th>${canSpeak?"<th></th>":""}</tr></thead><tbody>${
+    r.wrong.map((w,i)=>`<tr><td class="hz" lang="zh-Hans">${w.hz}</td><td><b>${esc(w.py)}</b></td><td>${esc(w.th)}</td>${canSpeak?`<td><button class="speak" data-sp="${i}">🔊</button></td>`:""}</tr>`).join("")
+  }</tbody></table></div>` : `<div class="welcome" style="text-align:left">ไม่มีคำที่ตอบผิดเลย! 🎉</div>`;
+
+  if(r.team){
+    const sorted=r.teams.map(t=>t).sort((a,b)=>b.score-a.score);
+    let rank=0,prev=null; const rows=sorted.map((t,i)=>{ if(t.score!==prev){rank=i+1;prev=t.score;} return `<tr><td>${rank===1?"🥇":rank===2?"🥈":rank===3?"🥉":rank}</td><td><b>${esc(t.name)}</b></td><td>${t.right}/${QUESTIONS_PER_TEAM}</td><td><b>${t.score}</b></td></tr>`;}).join("");
+    const top=sorted.filter(t=>t.score===sorted[0].score);
+    html=`<svg class="emp" viewBox="0 0 120 150"></svg>
+      <h2 class="title" style="font-size:clamp(26px,6vw,40px)">${top.length>1?"เสมอกัน! ได้รับพระราชทานรางวัลร่วมกัน":"ทีมผู้ชนะ: "+esc(top[0].name)}</h2>
+      <p>ผลการแข่งขัน ด่าน ${r.stage} · ${STAGES[r.stage].name} · HSK ${r.level}</p>
+      <table class="rank-table"><thead><tr><th>อันดับ</th><th>ทีม</th><th>ตอบถูก</th><th>คะแนน</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="stats"><div class="stat"><b>${r.right}</b>ตอบถูกรวม</div><div class="stat"><b>${wrongN}</b>ตอบผิดรวม</div><div class="stat"><b>${pct}%</b>ความถูกต้อง</div></div>
+      ${reviewHTML}`;
+    sfx.win(); coins(36);
+  }else{
+    const passed=!r.over||true; const completed=r.lives>0 && r.answered===r.n;
+    const prevRank=overallRank();
+    const prevSeals=[0,1,2,3].map(hasSeal);
+    const record=G.level==="auto";
+    if(record && completed){ mem.best[r.stage]=Math.max(mem.best[r.stage],r.score); save(); }
+    const newRank=overallRank();
+    const runRank = !completed?0 : (record&&hasSeal(3)&&r.score===100)?3 : r.score>=90?2 : 1;
+    const gainedSeals=[0,1,2,3].filter(i=>!prevSeals[i]&&hasSeal(i));
+    const rankUp = record && newRank>prevRank;
+    const sealIdx = STAGES[r.stage].seal;
+    html=`<h2 class="title">${completed?"ผ่านด่าน! 🎉":"สอบไม่ผ่าน…"}</h2>
+      <p>ด่าน ${r.stage} · ${STAGES[r.stage].name} · HSK ${r.level}</p>
+      <div class="bigscore">${r.score}<small> / ${total}</small></div>
+      <div class="stats"><div class="stat"><b>${r.right}</b>ตอบถูก</div><div class="stat"><b>${wrongN}</b>ตอบผิด</div><div class="stat"><b>${pct}%</b>ความถูกต้อง</div></div>
+      <div>ตำแหน่งที่ได้รับ</div>
+      <div class="rankbox ${rankUp?"up":""}">${esc(RANKS[runRank].name)}</div>
+      <p style="margin:6px 0 0"><b>${esc(RANKS[runRank].msg)}</b></p>
+      ${rankUp?`<p style="color:var(--red);font-weight:800">⬆ เลื่อนตำแหน่งสะสมเป็น “${esc(RANKS[newRank].name)}” แล้ว!</p>`:""}
+      ${!completed?`<p>พลังชีวิตหมดก่อนจบข้อสอบ ลองทบทวนคำศัพท์ด้านล่างแล้วสอบใหม่อีกครั้ง!</p>`:""}
+      ${completed&&record?`<div class="seals" style="max-width:420px;margin:10px auto">${sealHTML(sealIdx,false)}${gainedSeals.includes(3)?sealHTML(3,false):""}</div>
+        <p style="margin:0">${gainedSeals.length?"ได้รับตราประทับใหม่!":"ตราประทับด่านนี้อยู่ในคลังของท่านแล้ว"}</p>`:""}
+      ${completed&&!record?`<p class="hint">เลือกระดับ HSK เอง จึงไม่บันทึกตราประทับและตำแหน่งสะสม</p>`:""}
+      ${!completed?"":!hasSeal(3)&&record?`<p class="hint">ตำแหน่งสูงสุดต้องได้ 100 คะแนนครบทั้ง 3 ด่าน (ตอนนี้: ${mem.best[1]} / ${mem.best[2]} / ${mem.best[3]})</p>`:""}
+      ${reviewHTML}`;
+    if(completed){sfx.win();coins(rankUp||gainedSeals.length?60:30);} else sfx.lose();
+  }
+  html+=`<div class="actions" style="justify-content:center;margin-top:16px"><button class="btn" id="againBtn">เล่นอีกครั้ง</button><button class="btn ghost" id="homeBtn">กลับสู่หน้าหลัก</button></div>`;
+  box.innerHTML=html;
+  const emp=box.querySelector("svg.emp"); if(emp){emp.outerHTML=`<div class="emp" style="width:110px;margin:0 auto">${emperorSVG()}</div>`;}
+  box.querySelectorAll("[data-sp]").forEach(b=>b.onclick=()=>speak(r.wrong[+b.dataset.sp].hz));
+  $("#againBtn").onclick=()=>{ctx();sfx.click();startGame(r.stage);};
+  $("#homeBtn").onclick=goHome;
+  show("summary");
+}
+function goHome(){ if(canSpeak)speechSynthesis.cancel(); G.run=null; renderHome(); show("home"); }
+$("#quitBtn").onclick=()=>{ if(confirm("ออกจากข้อสอบและกลับหน้าหลักหรือไม่? คะแนนรอบนี้จะไม่ถูกบันทึก")) goHome(); };
+
+/* ---------- แป้นพิมพ์ ---------- */
+document.addEventListener("keydown",e=>{
+  if(!$("#play").classList.contains("active")||!G.run)return;
+  if(["1","2","3","4"].includes(e.key)&&!G.run.locked){answer(+e.key-1);}
+  else if((e.key==="n"||e.key==="ArrowRight")&&G.run.locked){e.preventDefault();next();}
+});
+if(canSpeak)speechSynthesis.getVoices();
+
+renderTeamInputs(); renderHome();
+</script>
+</body>
+</html>
